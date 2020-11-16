@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.honghong520.dao.StudentDao">
+
+    <select id="login" resultType="xyz.honghong520.entity.Student">
+        SELECT * FROM student WHERE sno=#{sno} AND spwd=#{spwd}
+    </select>
+
+    <select id="queryAll" resultType="xyz.honghong520.entity.Student">
+        SELECT `student`.*, `class`.`cname`
+        FROM `student`, `class`
+        WHERE `student`.`cno` = `class`.`cno`
+        ORDER BY sid
+    </select>
+
+    <insert id="insertStudentBatch" parameterType="xyz.honghong520.entity.Student">
+        INSERT INTO `student` (`sid`, `sno`, `cno`, `sname`, `spwd`, `sex`, `sage`, `email`, `phone`) VALUES
+        <foreach item="item" index="index" collection="list" separator=",">
+            (NULL, #{item.sno}, #{item.cno}, #{item.sname}, #{item.spwd}, #{item.sex}, #{item.sage}, #{item.email}, #{item.phone})
+        </foreach>
+    </insert>
+
+    <delete id="deleteStudent" parameterType="int">
+        DELETE FROM student WHERE sid=#{sid}
+    </delete>
+
+    <delete id="deleteStudentsBatch" parameterType="xyz.honghong520.entity.Student">
+        DELETE FROM student WHERE sid IN
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item.sid}
+        </foreach>
+    </delete>
+
+    <select id="queryStudentById" resultType="xyz.honghong520.entity.Student">
+        SELECT * FROM student WHERE sid=#{sid}
+    </select>
+
+    <update id="updateStudent" parameterType="xyz.honghong520.entity.Student">
+        UPDATE `student`
+        <set>
+            <if test="sno != null">sno=#{sno},</if>
+            <if test="cno != null">cno=#{cno},</if>
+            <if test="sname != null">sname=#{sname},</if>
+            <if test="spwd !=null">spwd=#{spwd},</if>
+            <if test="sex !=null">sex=#{sex},</if>
+            <if test="sage !=null">sage=#{sage},</if>
+            <if test="email !=null">email=#{email},</if>
+            <if test="phone !=null">phone=#{phone}</if>
+        </set>
+        WHERE `student`.`sid` = #{sid}
+    </update>
+
+    <select id="searchByKeyword" resultType="xyz.honghong520.entity.Student">
+        SELECT *
+		FROM (SELECT `student`.*, `class`.`cname` FROM `class`, `student` WHERE `class`.`cno`=`student`.`cno`) AS stu
+		WHERE `sno` LIKE "%"#{q}"%" OR `sname` LIKE "%"#{q}"%"
+    </select>
+
+    <delete id="deleteStudentByCid" parameterType="int">
+        DELETE FROM `student`
+        WHERE `cno` IN (
+        SELECT `cno` FROM `class` WHERE `cid` = #{cid} )
+    </delete>
+
+    <select id="queryStudentByCno" resultType="xyz.honghong520.entity.Student">
+        SELECT `student`.*
+        FROM `student`
+        WHERE `student`.`cno` = #{cno}
+    </select>
+
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.honghong520.dao.UserDao">
+
+    <select id="login" resultType="xyz.honghong520.entity.User">
+        SELECT * FROM tbuser WHERE tbuser=#{tbuser} AND tbpwd=#{tbpwd}
+    </select>
+
+    <select id="queryUserById" resultType="xyz.honghong520.entity.User">
+        SELECT * FROM tbuser WHERE tbid=#{tbid}
+    </select>
+
+    <select id="queryUserByUser" resultType="xyz.honghong520.entity.User">
+        SELECT * FROM tbuser WHERE tbuser=#{tbuser}
+    </select>
+
+    <select id="queryAll" resultType="xyz.honghong520.entity.User">
+        SELECT * FROM tbuser ORDER BY tbid
+    </select>
+
+    <update id="updateUser" parameterType="xyz.honghong520.entity.User">
+        UPDATE `tbuser`
+        <set>
+            <if test="tbuser != null">tbuser=#{tbuser},</if>
+            <if test="tbname != null">tbname=#{tbname},</if>
+            <if test="tbpwd != null">tbpwd=#{tbpwd}</if>
+        </set>
+        WHERE `tbuser`.`tbid` = #{tbid}
+    </update>
+
+    <delete id="deleteUser" parameterType="int">
+        DELETE FROM tbuser WHERE tbid=#{tbid}
+    </delete>
+
+    <delete id="deleteUsersBatch" parameterType="xyz.honghong520.entity.User">
+        DELETE FROM tbuser WHERE tbid IN
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item.tbid}
+        </foreach>
+    </delete>
+
+    <insert id="insertUser" parameterType="xyz.honghong520.entity.User">
+        INSERT INTO `tbuser` (`tbid`, `tbuser`, `tbname`, `tbpwd`) VALUES (NULL, #{item.tbuser}, #{item.tbname}, #{item.tbpwd})
+    </insert>
+
+    <insert id="insertUsersBatch" parameterType="xyz.honghong520.entity.User">
+        INSERT INTO `tbuser` (`tbid`, `tbuser`, `tbname`, `tbpwd`) VALUES
+        <foreach item="item" index="index" collection="list" separator=",">
+            (NULL, #{item.tbuser}, #{item.tbname}, #{item.tbpwd})
+        </foreach>
+    </insert>
+
+    <select id="searchByKeyword" resultType="xyz.honghong520.entity.User">
+        SELECT * FROM `tbuser` WHERE `tbuser` LIKE "%"#{q}"%"
+    </select>
+
+</mapper>

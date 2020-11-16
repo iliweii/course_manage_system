@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.honghong520.dao.TeacherDao">
+
+    <select id="login" resultType="xyz.honghong520.entity.Teacher">
+        SELECT * FROM teacher WHERE tno=#{tno} AND tpwd=#{tpwd}
+    </select>
+
+    <select id="queryAll" resultType="xyz.honghong520.entity.Teacher">
+        SELECT `teacher`.*
+        FROM `teacher`
+        ORDER BY tid
+    </select>
+
+    <insert id="insertTeacherBatch" parameterType="xyz.honghong520.entity.Teacher">
+        INSERT INTO `teacher` (`tid`, `tno`, `tname`, `tpwd`, `email`, `phone`) VALUES
+        <foreach item="item" index="index" collection="list" separator=",">
+            (NULL, #{item.tno}, #{item.tname}, #{item.tpwd}, #{item.email}, #{item.phone})
+        </foreach>
+    </insert>
+
+    <delete id="deleteTeacher" parameterType="int">
+        DELETE FROM teacher WHERE tid=#{tid}
+    </delete>
+
+    <delete id="deleteTeachersBatch" parameterType="xyz.honghong520.entity.Teacher">
+        DELETE FROM teacher WHERE tid IN
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item.tid}
+        </foreach>
+    </delete>
+
+    <select id="queryTeacherById" resultType="xyz.honghong520.entity.Teacher">
+        SELECT * FROM teacher WHERE tid=#{tid}
+    </select>
+
+    <update id="updateTeacher" parameterType="xyz.honghong520.entity.Teacher">
+        UPDATE `teacher`
+        <set>
+            <if test="tno != null">tno=#{tno},</if>
+            <if test="tname != null">tname=#{tname},</if>
+            <if test="tpwd !=null">tpwd=#{tpwd},</if>
+            <if test="email !=null">email=#{email},</if>
+            <if test="phone !=null">phone=#{phone}</if>
+        </set>
+        WHERE `teacher`.`tid` = #{tid}
+    </update>
+
+    <select id="searchByKeyword" resultType="xyz.honghong520.entity.Teacher">
+        SELECT * FROM `teacher`
+        WHERE `tno` LIKE "%"#{q}"%" OR `tname` LIKE "%"#{q}"%"
+    </select>
+
+</mapper>

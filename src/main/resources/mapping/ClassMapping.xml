@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.honghong520.dao.ClassDao">
+
+    <select id="queryAll" resultType="xyz.honghong520.entity.Class">
+        SELECT `class`.*, `stunum`.`num`
+        FROM `class` LEFT JOIN (SELECT `cno`, COUNT(*) AS `num` FROM `student` GROUP BY `cno`) AS `stunum`
+        ON `class`.`cno`=`stunum`.`cno`
+    </select>
+
+    <insert id="insertClassBatch" parameterType="xyz.honghong520.entity.Class">
+        INSERT INTO `class` (`cid`, `cno`, `cname`, `college`) VALUES
+        <foreach item="item" index="index" collection="list" separator=",">
+            (NULL, #{item.cno}, #{item.cname}, #{item.college})
+        </foreach>
+    </insert>
+
+    <delete id="deleteClass" parameterType="int">
+        DELETE FROM class WHERE cid=#{cid}
+    </delete>
+
+    <delete id="deleteClasssBatch" parameterType="xyz.honghong520.entity.Class">
+        DELETE FROM class WHERE cid IN
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item.cid}
+        </foreach>
+    </delete>
+
+    <select id="queryClassById" resultType="xyz.honghong520.entity.Class">
+        SELECT * FROM class WHERE cid=#{cid}
+    </select>
+
+    <update id="updateClass" parameterType="xyz.honghong520.entity.Class">
+        UPDATE `class`
+        <set>
+            <if test="cno != null">cno=#{cno},</if>
+            <if test="cname != null">cname=#{cname},</if>
+            <if test="college != null">college=#{college}</if>
+        </set>
+        WHERE `class`.`cid` = #{cid}
+    </update>
+
+    <select id="searchByKeyword" resultType="xyz.honghong520.entity.Class">
+        SELECT * FROM `class` WHERE `cno` LIKE "%"#{q}"%" OR `cname` LIKE "%"#{q}"%" OR `college` LIKE "%"#{q}"%"
+    </select>
+
+    <select id="queryClassByCno" resultType="xyz.honghong520.entity.Class">
+        SELECT * FROM class WHERE cno=#{cno}
+    </select>
+
+
+</mapper>

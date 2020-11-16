@@ -1,0 +1,34 @@
+server:
+  # 端口号
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  mvc:
+    # 前端解析目录
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+  # 数据库配置项
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 数据库端口号 3306
+    # 数据库名字 course_manage_system
+    # 数据库时区设置 +8:00 即GMT%2B8
+    # 数据库启用字符编码并设置 UTF-8 (解决中文乱码)
+    url: jdbc:mysql://localhost:3306/course_manage_system?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8
+    # 数据库 username & password
+    username: root
+    password:
+  main:
+    #当遇到同样名字的时候，是否允许覆盖注册
+    allow-bean-definition-overriding: true
+
+mybatis:
+  # MyBatis解析设置
+  mapper-locations: classpath:mapping/*Mapping.xml
+  type-aliases-package: xyz.honghong520.entity
+
+

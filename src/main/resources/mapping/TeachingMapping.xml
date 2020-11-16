@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.honghong520.dao.TeachingDao">
+
+    <select id="queryAll" resultType="xyz.honghong520.entity.Teaching">
+        SELECT `teaching`.*, `teacher`.`tname`, `course`.`cname`
+        FROM `teaching`, `teacher`, `course`
+        WHERE `teaching`.`tno` = `teacher`.`tno` AND `teaching`.`cno` = `course`.`cno`
+    </select>
+
+    <insert id="insertTeaching" parameterType="xyz.honghong520.entity.Teaching">
+        INSERT INTO `teaching` (`tcid`, `cno`, `tno`, `book`, `status`)
+        VALUES (NULL, #{cno}, #{tno}, #{book}, #{status})
+    </insert>
+
+    <insert id="insertTeachingBatch" parameterType="xyz.honghong520.entity.Teaching">
+        INSERT INTO `teaching` (`tcid`, `cno`, `tno`, `book`, `status`) VALUES
+        <foreach item="item" index="index" collection="list" separator=",">
+            (NULL, #{item.cno}, #{item.tno} , #{item.book}, '1')
+        </foreach>
+    </insert>
+
+    <delete id="deleteTeaching" parameterType="int">
+        DELETE FROM teaching WHERE tcid=#{tcid}
+    </delete>
+
+    <delete id="deleteTeachingBatch" parameterType="xyz.honghong520.entity.Teaching">
+        DELETE FROM teaching WHERE tcid IN
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item.tcid}
+        </foreach>
+    </delete>
+
+    <select id="queryTeachingById" resultType="xyz.honghong520.entity.Teaching">
+        SELECT * FROM teaching WHERE tcid=#{tcid}
+    </select>
+
+    <update id="updateTeaching" parameterType="xyz.honghong520.entity.Teaching">
+        UPDATE `teaching`
+        <set>
+            <if test="book != null">book=#{book}</if>
+        </set>
+        WHERE `teaching`.`tcid` = #{tcid}
+    </update>
+
+    <update id="allowTeaching" parameterType="xyz.honghong520.entity.Teaching">
+        UPDATE `teaching` SET `status` = 1 WHERE `teaching`.`tcid` = #{tcid}
+    </update>
+
+    <select id="searchByKeyword" resultType="xyz.honghong520.entity.Teaching">
+        SELECT `teaching`.*, `teacher`.`tname`, `course`.`cname`
+		FROM `teaching`, `teacher`, `course`
+		WHERE `teaching`.`tno` = `teacher`.`tno` AND `teaching`.`cno` = `course`.`cno`
+		AND (`teaching`.`tno` LIKE "%"#{q}"%" OR `teaching`.`cno` LIKE "%"#{q}"%"
+    </select>
+
+    <update id="allowTeachingsBatch" parameterType="xyz.honghong520.entity.Teaching">
+        UPDATE `teaching` SET `status` = 1 WHERE
+        <foreach item="item" index="index" collection="list" separator=" OR ">
+            `choose`.`tcid` = #{item.tcid}
+        </foreach>
+    </update>
+
+    <select id="queryAllGroupTeacher" resultType="xyz.honghong520.entity.Teaching">
+        SELECT `teaching`.`tcid`, `teaching`.`cno`, GROUP_CONCAT(`teacher`.`tname` SEPARATOR ',') AS teacher
+		FROM `teaching`, `teacher`
+		WHERE `teacher`.`tno` = `teaching`.`tno` GROUP BY `teaching`.`cno`
+    </select>
+
+    <select id="queryTeachingByTid" resultType="xyz.honghong520.entity.Teaching">
+        SELECT `teaching`.*, `teacher`.`tname`, `course`.`cname`
+		FROM `teaching`, `teacher`, `course`
+		WHERE `teaching`.`tno` = `teacher`.`tno` AND `teaching`.`cno` = `course`.`cno`
+		AND `teacher`.`tid` = #{id}
+    </select>
+
+</mapper>

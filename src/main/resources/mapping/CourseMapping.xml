@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.honghong520.dao.CourseDao">
+
+    <select id="queryAll" resultType="xyz.honghong520.entity.Course">
+        SELECT `course`.*, `cournum`.`num`
+        FROM `course` LEFT JOIN (SELECT `cno`, COUNT(*) AS `num` FROM `choose` GROUP BY `cno`) AS `cournum`
+        ON `course`.`cno`=`cournum`.`cno`
+    </select>
+
+    <insert id="insertCourseBatch" parameterType="xyz.honghong520.entity.Course">
+        INSERT INTO `course` (`cid`, `cno`, `cname`) VALUES
+        <foreach item="item" index="index" collection="list" separator=",">
+            (NULL, #{item.cno}, #{item.cname})
+        </foreach>
+    </insert>
+
+    <delete id="deleteCourse" parameterType="int">
+        DELETE FROM course WHERE cid=#{cid}
+    </delete>
+
+    <delete id="deleteCoursesBatch" parameterType="xyz.honghong520.entity.Course">
+        DELETE FROM course WHERE cid IN
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item.cid}
+        </foreach>
+    </delete>
+
+    <select id="queryCourseById" resultType="xyz.honghong520.entity.Course">
+        SELECT * FROM course WHERE cid=#{cid}
+    </select>
+
+    <update id="updateCourse" parameterType="xyz.honghong520.entity.Course">
+        UPDATE `course`
+        <set>
+            <if test="cno != null">cno=#{cno},</if>
+            <if test="cname != null">cname=#{cname}</if>
+        </set>
+        WHERE `course`.`cid` = #{cid}
+    </update>
+
+    <select id="searchByKeyword" resultType="xyz.honghong520.entity.Course">
+        SELECT * FROM `course` WHERE `cno` LIKE "%"#{q}"%" OR `cname` LIKE "%"#{q}"%"
+    </select>
+
+    <select id="queryCourseByCno" resultType="xyz.honghong520.entity.Course">
+        SELECT * FROM course WHERE cno=#{cno}
+    </select>
+
+</mapper>
